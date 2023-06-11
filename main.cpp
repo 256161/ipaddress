@@ -25,6 +25,15 @@ bool comp (std::vector<std::string> &lipStr, std::vector<std::string> &ripStr)
     return result;
 }
 
+std::vector<std::vector<std::string> > filterByNumber(int number, std::vector<std::vector<std::string> > vectorFilter){
+    std::vector<std::vector<std::string> > result;
+    for (std::vector<std::string> ip : vectorFilter){
+        if (std::stoi(ip[0]) == number)
+        result.push_back(ip);
+    }
+    return result;
+}
+
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -34,31 +43,18 @@ bool comp (std::vector<std::string> &lipStr, std::vector<std::string> &ripStr)
 // ("11.22", '.') -> ["11", "22"]
 std::vector<std::string> split(const std::string &str, char d)
 {
-    //std::cout <<  "Начало работы split" << "\n";
-    //std::cout <<  "str " << str <<"\n";
-    //std::cout <<  "d " << d << "\n";
     std::vector<std::string> r;
-
-    std::string::size_type start = 0; /// начальный элемент
-    std::string::size_type stop = str.find_first_of(d); // проходим кусок до знака с разделением
-    //std::cout <<  "start " << start << "\n";
-    //std::cout <<  "stop " << stop << "\n";
+    std::string::size_type start = 0; 
+    std::string::size_type stop = str.find_first_of(d); 
     while(stop != std::string::npos)
     {
         r.push_back(str.substr(start, stop - start));
-        //std::cout << "Записываем симовл " << str.substr(start, stop - start) << "\n";
         start = stop + 1;
         stop = str.find_first_of(d, start);
-        //std::cout << "Читаем с  симовла на позиции " << start << "\n";
-        //std::cout << "Читаем до симовла на позиции " << stop << "\n";
 
     }
 
     r.push_back(str.substr(start));
-    //std::cout << "Проходим по записанному вектору " << "\n";
-    /*for (auto ch : r) {
-        std::cout << ch << "\n";
-    }*/
     return r;
 }
 
@@ -71,9 +67,7 @@ int main(int argc, char const *argv[])
         for(std::string line; std::getline(std::cin, line);)
         {
             if (line == "Fil") break;
-            //std::cout << "Читаем строк: " << line << "\n";
             std::vector<std::string> v = split(line, '\t');
-            //std::cout << "Запись в исходный вектор для дальнейшей работы \n"; 
             ip_pool.push_back(split(v.at(0), '.'));
             
         }
@@ -84,8 +78,27 @@ int main(int argc, char const *argv[])
         std::reverse(ip_pool.begin(), ip_pool.end());
         std::cout << "Sort end \n";
 
-        std::cout << " Вывод работы алгоритма\n ";
+
+        std::cout << "Вывод работы алгоритма\n ";
         for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
+        {
+            
+            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
+            {
+                if (ip_part != ip->cbegin())
+                {
+                    std::cout << ".";
+
+                }
+                std::cout << *ip_part;
+            }
+            std::cout << std::endl;
+        }
+
+        auto onePool = filterByNumber(1, ip_pool);
+
+        std::cout << "Вывод работы алгоритма\n ";
+        for(std::vector<std::vector<std::string> >::const_iterator ip = onePool.cbegin(); ip != onePool.cend(); ++ip)
         {
             
             for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)

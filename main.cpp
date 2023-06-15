@@ -1,39 +1,77 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 #include <algorithm>
 
+using std::pair;
 
-bool comp (std::vector<std::string> &lipStr, std::vector<std::string> &ripStr)
-{
-    bool result = false;
-    int count = 0;
-    while(count != 4) {
-        int lip = std::stoi(lipStr[count]);
-        int rip = std::stoi(ripStr[count]);
-            if (lip < rip)
-            {
-                return false;
-            }
-            if (lip > rip)
-            return true;
-        count++;
+bool comp(std::vector<std::string> &lipStr, std::vector<std::string> &ripStr) {
+  bool result = false;
+  int count = 0;
+  while (count != 4) {
+    int lip = std::stoi(lipStr[count]);
+    int rip = std::stoi(ripStr[count]);
+    if (lip < rip) {
+      return false;
     }
-    
-    return result;
+    if (lip > rip)
+      return true;
+    count++;
+  }
+
+  return result;
+}
+void inputIpPool(const std::vector<std::vector<std::string> > &ip_pool) {
+    for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
+        {
+            
+            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
+            {
+                if (ip_part != ip->cbegin())
+                {
+                    std::cout << ".";
+
+                }
+                std::cout << *ip_part;
+            }
+            std::cout << std::endl;
+        }
 }
 
-std::vector<std::vector<std::string> > filterByNumber(int number, std::vector<std::vector<std::string> > vectorFilter){
+std::vector<std::vector<std::string> > filter(std::map<int, std::string> pos, const std::vector<std::vector<std::string> > &vectorFilter)
+{
     std::vector<std::vector<std::string> > result;
     for (std::vector<std::string> ip : vectorFilter){
-        if (std::stoi(ip[0]) == number)
-        result.push_back(ip);
+
+      for (const pair<const int, std::string> &position : pos) {
+        if (ip[position.first] == position.second){
+            result.push_back(ip);
+            break;
+        }
+      }
     }
     return result;
 }
 
+std::vector<std::vector<std::string> > filter_any(int number, const std::vector<std::vector<std::string> > &vectorFilter)
+{
+    std::vector<std::vector<std::string> > result;
+    for (std::vector<std::string> ip : vectorFilter){
+        int it = 0;
+        while (it < 4){
+            if (std::stoi(ip[it]) == number)
+            {
+                result.push_back(ip);
+                break;
+            }
+        it++;
+        }
+    }
+    return result;
+}
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -79,39 +117,22 @@ int main(int argc, char const *argv[])
         std::cout << "Sort end \n";
 
 
-        std::cout << "Вывод работы алгоритма\n ";
-        for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
-        {
-            
-            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
-            {
-                if (ip_part != ip->cbegin())
-                {
-                    std::cout << ".";
+        std::cout << "Вывод работы алгоритма после сортировки\n ";
+        inputIpPool(ip_pool);
 
-                }
-                std::cout << *ip_part;
-            }
-            std::cout << std::endl;
-        }
+        std::map<int, std::string> pos1;
+        pos1[0]="1";
+        std::cout << "Вывод работы алгоритма с 1 в начале\n ";
+        inputIpPool(filter(pos1, ip_pool));
 
-        auto onePool = filterByNumber(1, ip_pool);
+        std::map<int, std::string> pos2;
+        pos2[0]="46";
+        pos2[1]="70";
+        std::cout << "Вывод работы алгоритма с 46 на первой позиции и с 70 на второй позиции в начале\n ";
+        inputIpPool(filter(pos2, ip_pool));
+        std::cout << "Вывод работы алгоритма с 46 на любом месте\n ";
 
-        std::cout << "Вывод работы алгоритма\n ";
-        for(std::vector<std::vector<std::string> >::const_iterator ip = onePool.cbegin(); ip != onePool.cend(); ++ip)
-        {
-            
-            for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
-            {
-                if (ip_part != ip->cbegin())
-                {
-                    std::cout << ".";
-
-                }
-                std::cout << *ip_part;
-            }
-            std::cout << std::endl;
-        }
+        inputIpPool(filter_any(46, ip_pool));
 
         // 222.173.235.246
         // 222.130.177.64

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(PATCH_VERSION "1")
-set(PROJECT_VESRION 0.0.${PATCH_VERSION})
+set(PROJECT_VESRION 0.0.7)
 
 project(ipsort VERSION ${PROJECT_VESRION})
 

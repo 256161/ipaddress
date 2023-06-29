@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 
+using std::cout;
 using std::pair;
 
 bool comp(std::vector<std::string> &lipStr, std::vector<std::string> &ripStr) {
@@ -15,16 +16,17 @@ bool comp(std::vector<std::string> &lipStr, std::vector<std::string> &ripStr) {
     int lip = std::stoi(lipStr[count]);
     int rip = std::stoi(ripStr[count]);
     if (lip < rip) {
-      return false;
+      return true;
     }
     if (lip > rip)
-      return true;
+      return false;
     count++;
   }
 
   return result;
 }
 void inputIpPool(const std::vector<std::vector<std::string> > &ip_pool) {
+
     for(std::vector<std::vector<std::string> >::const_iterator ip = ip_pool.cbegin(); ip != ip_pool.cend(); ++ip)
         {
             
@@ -39,6 +41,17 @@ void inputIpPool(const std::vector<std::vector<std::string> > &ip_pool) {
             }
             std::cout << std::endl;
         }
+}
+
+std::vector<std::vector<std::string> > filter(int oneNumber, int twoNumber, const std::vector<std::vector<std::string> > &vectorFilter)
+{
+    std::vector<std::vector<std::string> > result;
+    for (std::vector<std::string> ip : vectorFilter){
+        if (std::stoi(ip[0]) == oneNumber && std::stoi(ip[1]) == twoNumber){
+            result.push_back(ip);
+        }
+    }
+    return result;
 }
 
 std::vector<std::vector<std::string> > filter(std::map<int, std::string> pos, const std::vector<std::vector<std::string> > &vectorFilter)
@@ -60,6 +73,7 @@ std::vector<std::vector<std::string> > filter_any(int number, const std::vector<
 {
     std::vector<std::vector<std::string> > result;
     for (std::vector<std::string> ip : vectorFilter){
+
         int it = 0;
         while (it < 4){
             if (std::stoi(ip[it]) == number)
@@ -81,17 +95,18 @@ std::vector<std::vector<std::string> > filter_any(int number, const std::vector<
 // ("11.22", '.') -> ["11", "22"]
 std::vector<std::string> split(const std::string &str, char d)
 {
-    std::vector<std::string> r;
+    std::vector<std::string> r; 
     std::string::size_type start = 0; 
-    std::string::size_type stop = str.find_first_of(d); 
-    while(stop != std::string::npos)
+    std::string::size_type stop = str.find_first_of(d);
+    int count = 0;
+
+    while(stop != std::string::npos && count < 4)
     {
+        count++;
         r.push_back(str.substr(start, stop - start));
         start = stop + 1;
         stop = str.find_first_of(d, start);
-
     }
-
     r.push_back(str.substr(start));
     return r;
 }
@@ -101,37 +116,24 @@ int main(int argc, char const *argv[])
     try
     {
         std::vector<std::vector<std::string> > ip_pool;
-
+        int i = 0;
         for(std::string line; std::getline(std::cin, line);)
         {
-            if (line == "Fil") break;
+            i++;
+            if (i > 1001 || line == "Fil") break;
             std::vector<std::string> v = split(line, '\t');
             ip_pool.push_back(split(v.at(0), '.'));
             
         }
 
-        // TODO reverse lexicographically sort
-        std::cout << "Sort start \n" ;
+        
         std::sort(ip_pool.begin(), ip_pool.end(), comp);
         std::reverse(ip_pool.begin(), ip_pool.end());
-        std::cout << "Sort end \n";
-
-
-        std::cout << "Вывод работы алгоритма после сортировки\n ";
         inputIpPool(ip_pool);
-
         std::map<int, std::string> pos1;
         pos1[0]="1";
-        std::cout << "Вывод работы алгоритма с 1 в начале\n ";
         inputIpPool(filter(pos1, ip_pool));
-
-        std::map<int, std::string> pos2;
-        pos2[0]="46";
-        pos2[1]="70";
-        std::cout << "Вывод работы алгоритма с 46 на первой позиции и с 70 на второй позиции в начале\n ";
-        inputIpPool(filter(pos2, ip_pool));
-        std::cout << "Вывод работы алгоритма с 46 на любом месте\n ";
-
+        inputIpPool(filter(46, 70, ip_pool));
         inputIpPool(filter_any(46, ip_pool));
 
         // 222.173.235.246
